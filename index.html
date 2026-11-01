@@ -1,597 +1,719 @@
 <!DOCTYPE html>
-<html lang="ta" class="scroll-smooth">
+<html lang="ta" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eBook Store - தமிழா இ-புத்தக நிலையம்</title>
+    <title>E-Book Store & Creator Earnings Hub | மின்நூல் விற்பனை மையம்</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Mukta+Malar:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        famYellow: '#FFD700',
-                        famDark: '#121212',
-                        brandPrimary: '#6366F1',
-                        brandHover: '#4F46E5',
+                        brand: {
+                            50: '#eep2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        emerald: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Mukta Malar', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Mukta+Malar:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        body { font-family: 'Inter', 'Mukta Malar', sans-serif; }
-        .glassmorphic {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-        }
-        .dark .glassmorphic {
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(12px);
-        }
+        body { font-family: 'Plus Jakarta Sans', 'Mukta Malar', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 dark:bg-slate-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+<body class="h-full flex flex-col text-slate-800 antialiased selection:bg-brand-500 selection:text-white">
 
-    <!-- Header / Navigation Bar -->
-    <header class="sticky top-0 z-40 glassmorphic border-b border-gray-200 dark:border-slate-800 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <!-- Logo -->
-            <div class="flex items-center space-x-3 cursor-pointer" onclick="filterCategory('all')">
-                <div class="bg-gradient-to-tr from-indigo-600 to-purple-600 p-2.5 rounded-xl text-white shadow-md">
-                    <i class="fa-solid fa-book-open-reader text-xl"></i>
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-slate-900 text-white shadow-lg border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('store')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-500 to-indigo-400 flex items-center justify-center shadow-md shadow-brand-500/30">
+                        <i class="fa-solid fa-book-open text-lg text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-extrabold text-lg sm:text-xl tracking-tight leading-none text-white">
+                            E-Book Hub <span class="text-xs font-semibold px-2 py-0.5 rounded bg-brand-600 text-indigo-100 ml-1">Tamil & English</span>
+                        </h1>
+                        <p class="text-xs text-slate-400 hidden sm:block">பாதுகாப்பான மின்நூல் விற்பனை தளம்</p>
+                    </div>
                 </div>
-                <div>
-                    <span class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">eBook Portal</span>
-                    <span class="text-xs block text-gray-500 dark:text-gray-400 font-medium">சிறுவர் முதல் பெரியவர் வரை</span>
-                </div>
-            </div>
 
-            <!-- Search Bar (Desktop) -->
-            <div class="hidden md:flex flex-1 max-w-md mx-8">
-                <div class="relative w-full">
-                    <input type="text" id="searchInput" oninput="handleSearch()" placeholder="புத்தகம் அல்லது ஆசிரியர் பெயர் மூலம் தேடுக..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400"></i>
-                </div>
-            </div>
-
-            <!-- Nav Actions -->
-            <div class="flex items-center space-x-3 sm:space-x-4">
-                <!-- Theme Toggle Button -->
-                <button onclick="toggleDarkMode()" class="p-2.5 rounded-full hover:bg-gray-200 dark:hover:bg-slate-800 text-gray-600 dark:text-gray-300 transition">
-                    <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
-                </button>
-
-                <!-- Admin Upload Button -->
-                <button onclick="openModal('uploadModal')" class="flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-full font-medium text-sm transition shadow-sm">
-                    <i class="fa-solid fa-plus text-xs"></i>
-                    <span class="hidden sm:inline">புதிய Upload</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Search Bar (Mobile Only) -->
-        <div class="px-4 pb-3 md:hidden">
-            <div class="relative w-full">
-                <input type="text" id="searchInputMobile" oninput="handleSearchMobile()" placeholder="புத்தகம் தேட..." class="w-full pl-10 pr-4 py-2 rounded-full border border-gray-300 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400"></i>
+                <!-- Navigation Tabs -->
+                <nav class="flex items-center space-x-1 sm:space-x-2">
+                    <button onclick="switchTab('store')" id="tab-store" class="px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 bg-brand-600 text-white shadow-sm">
+                        <i class="fa-solid fa-store"></i>
+                        <span class="hidden md:inline">கடை (Store)</span>
+                    </button>
+                    <button onclick="switchTab('upload')" id="tab-upload" class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span class="hidden md:inline">பதிவேற்று (Upload)</span>
+                    </button>
+                    <button onclick="switchTab('dashboard')" id="tab-dashboard" class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center space-x-2">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span class="hidden md:inline">வருமானம் (Wallet)</span>
+                    </button>
+                </nav>
             </div>
         </div>
     </header>
 
-    <!-- Main Banner / Hero Section -->
-    <section class="bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-950 text-white py-12 px-4 sm:px-6 lg:px-8 text-center relative overflow-hidden">
-        <div class="max-w-4xl mx-auto relative z-10">
-            <span class="bg-indigo-500/30 text-indigo-300 border border-indigo-400/30 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-semibold inline-block mb-3">E-Book Store</span>
-            <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4 leading-tight">அனைத்து புத்தகங்களும் ஒரே இடத்தில்!</h1>
-            <p class="text-gray-300 text-base sm:text-lg mb-6 max-w-2xl mx-auto">சிறுவர்களுக்கான சுவாரசியக் கதைகள், பள்ளி/கல்லூரி பாடநூல்கள் மற்றும் பயனுள்ள சுயமுன்னேற்றப் புத்தகங்கள். சுலபமான FamPay UPI கட்டணம் மூலம் உடனடி டவுன்லோட்!</p>
-            <div class="flex justify-center items-center gap-4 text-xs sm:text-sm text-gray-300">
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-halved text-emerald-400"></i>FamPay QR Secure Payment</span>
-                <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-amber-400"></i>Instant PDF Access</span>
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= STORE TAB ================= -->
+        <section id="section-store" class="space-y-6">
+            <!-- Hero Banner & Security Notice -->
+            <div class="relative bg-gradient-to-r from-brand-900 via-indigo-900 to-slate-900 rounded-2xl p-6 sm:p-8 text-white overflow-hidden shadow-xl">
+                <div class="absolute -right-10 -bottom-10 opacity-10">
+                    <i class="fa-solid fa-shield-halved text-9xl"></i>
+                </div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-3">
+                        <i class="fa-solid fa-lock text-xs"></i> 100% நேரடி வங்கிப் பரிவர்த்தனை (Direct UPI Payment)
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-bold tracking-tight">சிறியவர்கள் முதல் பெரியவர்கள் வரை அனைவருக்குமான புத்தகங்கள்</h2>
+                    <p class="mt-2 text-sm text-slate-300">
+                        எந்தவொரு நபரும் புத்தகம் அப்லோட் செய்யலாம். உங்கள் புத்தகம் விற்பனையாகும் போது, பணம் நேரடியாக உங்களுடைய UPI கணக்கிற்கு (GPay / PhonePe / FamPay) மட்டும் பாதுகாப்பாக வந்து சேரும்.
+                    </p>
+                </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Main Content Container -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
-        <!-- Categories Filter Tabs -->
-        <div class="flex items-center space-x-2 overflow-x-auto pb-4 mb-8 no-scrollbar scroll-smooth">
-            <button onclick="filterCategory('all')" class="cat-btn active flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border bg-indigo-600 text-white border-indigo-600">
-                <i class="fa-solid fa-border-all"></i> அனைத்தும் (All)
-            </button>
-            <button onclick="filterCategory('kids')" class="cat-btn flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-500 transition">
-                <i class="fa-solid fa-child text-pink-500"></i> சிறுவர் கதைகள் (Kids)
-            </button>
-            <button onclick="filterCategory('academic')" class="cat-btn flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-500 transition">
-                <i class="fa-solid fa-graduation-cap text-blue-500"></i> பாடப்புத்தகங்கள் (Academic)
-            </button>
-            <button onclick="filterCategory('fiction')" class="cat-btn flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-500 transition">
-                <i class="fa-solid fa-book-journal-whills text-purple-500"></i> நாவல்கள் & கதைகள் (Fiction)
-            </button>
-            <button onclick="filterCategory('selfhelp')" class="cat-btn flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-500 transition">
-                <i class="fa-solid fa-brain text-emerald-500"></i> சுயமுன்னேற்றம் (Self-Help)
-            </button>
-            <button onclick="filterCategory('comics')" class="cat-btn flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-500 transition">
-                <i class="fa-solid fa-mask text-amber-500"></i> காமிக்ஸ் (Comics)
-            </button>
-        </div>
+            <!-- Search and Filter Bar -->
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+                <div class="relative w-full md:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" onkeyup="filterBooks()" placeholder="புத்தகத்தின் பெயரைத் தேடுக..." class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:bg-white transition-all">
+                </div>
 
-        <!-- Books Grid Header -->
-        <div class="flex items-center justify-between mb-6">
-            <h2 id="sectionTitle" class="text-xl sm:text-2xl font-bold">கிடைக்கும் புத்தகங்கள்</h2>
-            <span id="bookCount" class="text-sm font-medium text-gray-500 dark:text-gray-400">0 புத்தகங்கள்</span>
-        </div>
+                <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0 custom-scrollbar">
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider whitespace-nowrap">பிரிவு:</span>
+                    <button onclick="filterCategory('All')" class="cat-btn active px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-brand-600 text-white">அனைத்தும் (All)</button>
+                    <button onclick="filterCategory('சிறியவர்கள் (Kids)')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">சிறியவர்கள் (Kids)</button>
+                    <button onclick="filterCategory('மாணவர்கள் (Students)')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">மாணவர்கள் (Students)</button>
+                    <button onclick="filterCategory('பெரியவர்கள் (Adults)')" class="cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200">பெரியவர்கள் (Adults)</button>
+                </div>
+            </div>
 
-        <!-- Books Grid Display -->
-        <div id="booksGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            <!-- Dynamic Cards Loaded via JS -->
-        </div>
+            <!-- Books Grid -->
+            <div id="booksGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <!-- Book Cards dynamic injection -->
+            </div>
 
-        <!-- Empty State Message -->
-        <div id="emptyState" class="hidden text-center py-16">
-            <i class="fa-solid fa-book-open text-5xl text-gray-400 mb-3"></i>
-            <h3 class="text-lg font-semibold text-gray-600 dark:text-gray-300">புத்தகங்கள் எதுவும் கிடைக்கவில்லை!</h3>
-            <p class="text-sm text-gray-400">வேறு தேடல் வார்த்தைகளை முயற்சி செய்து பார்க்கவும்.</p>
-        </div>
+            <!-- Empty State -->
+            <div id="emptyStore" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 p-8">
+                <i class="fa-solid fa-book-open-reader text-5xl text-slate-300 mb-3"></i>
+                <h3 class="text-base font-semibold text-slate-700">புத்தகங்கள் ஏதும் கிடைக்கவில்லை</h3>
+                <p class="text-xs text-slate-500 mt-1">புதிய புத்தகங்களை பதிவேற்ற 'Upload' பகுதிக்குச் செல்லவும்.</p>
+            </div>
+        </section>
+
+
+        <!-- ================= UPLOAD TAB ================= -->
+        <section id="section-upload" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+                <div class="border-b border-slate-100 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-file-arrow-up text-brand-600"></i>
+                        புதிய மின்நூல் பதிவேற்றம் (Upload New E-Book)
+                    </h2>
+                    <p class="text-xs text-slate-500 mt-1">உங்கள் மின்நூலை பதிவேற்றி நேரடியாக உங்கள் UPI கணக்கிற்கு பணம் பெறுங்கள்.</p>
+                </div>
+
+                <form id="uploadForm" onsubmit="handleUpload(event)" class="space-y-5">
+                    <!-- Author Security Box -->
+                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-3">
+                        <div class="flex items-start gap-2">
+                            <i class="fa-solid fa-shield-check text-amber-600 text-lg mt-0.5"></i>
+                            <div>
+                                <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wider">வங்கி & பாதுகாப்பு விவரங்கள் (Payment Setup)</h4>
+                                <p class="text-xs text-amber-700 mt-0.5">வாடிக்கையாளர்கள் செலுத்தும் பணம் நேரடியாக நீங்கள் கீழே கொடுக்கும் UPI ID-க்கு மட்டுமே செல்லும்.</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">எழுத்தாளர் / விற்பனையாளர் பெயர் *</label>
+                                <input type="text" id="authorName" required placeholder="Ex: K. Raman" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">உங்களின் UPI ID (GPay / PhonePe) *</label>
+                                <input type="text" id="authorUpi" required placeholder="Ex: raman@okaxis / 9876543210@ybl" class="w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                                <span class="text-[10px] text-slate-500">இந்த UPI முகவரிக்கு மட்டும் பணம் நேரடியாக அனுப்பப்படும்.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Information -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">புத்தகத்தின் பெயர் (Book Title) *</label>
+                            <input type="text" id="bookTitle" required placeholder="உதாரணமாக: அறிவியல் அதிசயங்கள்" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none focus:bg-white">
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">பிரிவு (Category) *</label>
+                                <select id="bookCategory" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none focus:bg-white">
+                                    <option value="சிறியவர்கள் (Kids)">சிறியவர்கள் (Kids)</option>
+                                    <option value="மாணவர்கள் (Students)">மாணவர்கள் (Students)</option>
+                                    <option value="பெரியவர்கள் (Adults)">பெரியவர்கள் (Adults)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 mb-1">விலை (Price in ₹) *</label>
+                                <input type="number" id="bookPrice" min="1" required placeholder="50" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none focus:bg-white">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">புத்தக விவரிப்பு (Description)</label>
+                            <textarea id="bookDesc" rows="3" placeholder="புத்தகத்தைப் பற்றிய சுருக்கமான அறிமுகம்..." class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none focus:bg-white"></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">PDF கோப்பைத் தேர்ந்தெடுக்கவும் (Upload PDF File) *</label>
+                            <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center hover:bg-slate-50 transition-colors cursor-pointer relative">
+                                <input type="file" id="pdfFile" accept=".pdf" required onchange="updateFileLabel(this)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                                <i class="fa-solid fa-file-pdf text-3xl text-red-500 mb-1"></i>
+                                <p id="fileLabelText" class="text-xs text-slate-600 font-medium">PDF கோப்பை தேர்வு செய்ய இங்கே கிளிக் செய்யவும்</p>
+                                <span class="text-[10px] text-slate-400">PDF கோப்புகள் மட்டுமே ஏற்கப்படும் (Max: 20MB)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        புத்தகத்தை பதிவேற்று (Publish Book Now)
+                    </button>
+                </form>
+            </div>
+        </section>
+
+
+        <!-- ================= DASHBOARD TAB ================= -->
+        <section id="section-dashboard" class="hidden space-y-6">
+            <!-- Author Select Header -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">எழுத்தாளர் வருமான விவரங்கள் (Author Earnings Ledger)</h2>
+                    <p class="text-xs text-slate-500">ஒவ்வொரு விற்பனையாளரின் தனிப்பட்ட வருமானக் கணக்கு.</p>
+                </div>
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <label class="text-xs font-bold text-slate-600 whitespace-nowrap">எழுத்தாளர்:</label>
+                    <select id="authorSelect" onchange="renderDashboard()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <!-- Dynamic Options -->
+                    </select>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider">மொத்த விற்பனை (Total Sales)</span>
+                        <i class="fa-solid fa-chart-pie text-brand-500"></i>
+                    </div>
+                    <div id="statTotalSales" class="text-2xl font-extrabold text-slate-900">0</div>
+                    <span class="text-[11px] text-emerald-600 font-medium">வெற்றிகரமான ஆர்டர்கள்</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider">மொத்த வருமானம் (Total Earnings)</span>
+                        <i class="fa-solid fa-indian-rupee-sign text-emerald-500"></i>
+                    </div>
+                    <div id="statTotalEarnings" class="text-2xl font-extrabold text-emerald-600">₹0</div>
+                    <span class="text-[11px] text-slate-500">100% நேரடி வங்கி வரவு</span>
+                </div>
+
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center text-slate-500 mb-2">
+                        <span class="text-xs font-semibold uppercase tracking-wider">பதிவிட்ட புத்தகங்கள் (Active Books)</span>
+                        <i class="fa-solid fa-book text-indigo-500"></i>
+                    </div>
+                    <div id="statActiveBooks" class="text-2xl font-extrabold text-slate-900">0</div>
+                    <span class="text-[11px] text-slate-500">விற்பனையில் உள்ளவை</span>
+                </div>
+            </div>
+
+            <!-- Transaction History Table -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="font-bold text-sm text-slate-800">பரிவர்த்தனை வரலாறு (Payment Transactions Log)</h3>
+                    <span class="text-xs px-2 py-1 rounded bg-slate-100 text-slate-600 font-mono">Status: Verified Direct UPI</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-[11px] uppercase font-bold text-slate-500">
+                                <th class="p-3">தேதி (Date)</th>
+                                <th class="p-3">புத்தகம் (Book Title)</th>
+                                <th class="p-3">வாங்கியவர் (Buyer)</th>
+                                <th class="p-3">தொகை (Amount)</th>
+                                <th class="p-3">UPI ID</th>
+                                <th class="p-3">நிலை (Status)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTableBody" class="divide-y divide-slate-100 text-xs">
+                            <!-- Rows injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-slate-800 py-8 px-4 sm:px-6 lg:px-8 mt-12 text-center text-sm text-gray-500 dark:text-gray-400">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-book-bookmark text-indigo-500"></i>
-                <span class="font-bold text-gray-800 dark:text-gray-200">eBook Store Portal</span>
-            </div>
-            <p>© 2026 eBook Store. Payments powered by FamPay QR (UPI: 7825955024@fam)</p>
-            <div class="flex space-x-4">
-                <a href="#" class="hover:text-indigo-500"><i class="fa-brands fa-whatsapp text-lg"></i></a>
-                <a href="#" class="hover:text-indigo-500"><i class="fa-regular fa-envelope text-lg"></i></a>
-            </div>
-        </div>
-    </footer>
 
-    <!-- MODAL 1: Buy Book & FamPay Payment Modal -->
-    <div id="buyModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 dark:border-slate-800 relative my-8">
-            <button onclick="closeModal('buyModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-xl font-bold p-2">
+    <!-- ================= PAYMENT & SCANNER MODAL ================= -->
+    <div id="paymentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl relative space-y-4 border border-slate-100">
+            <button onclick="closePaymentModal()" class="absolute right-4 top-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <!-- Book Info Header -->
-            <div class="flex gap-4 items-center mb-6 pb-4 border-b border-gray-100 dark:border-slate-800">
-                <img id="buyModalBookCover" src="" alt="Book Cover" class="w-16 h-20 object-cover rounded-lg shadow">
+            <div class="text-center">
+                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-indigo-50 text-brand-600 uppercase tracking-wide">பாதுகாப்பான UPI செலுத்துதல்</span>
+                <h3 class="text-lg font-bold text-slate-900 mt-1" id="modalBookTitle">Book Title</h3>
+                <p class="text-xs text-slate-500" id="modalAuthorInfo">Author: Name</p>
+            </div>
+
+            <!-- Author Specific Payment Alert -->
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-900 flex items-start gap-2">
+                <i class="fa-solid fa-circle-info text-blue-600 text-sm mt-0.5"></i>
                 <div>
-                    <span id="buyModalCategory" class="text-xs font-semibold uppercase px-2 py-0.5 rounded bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">Category</span>
-                    <h3 id="buyModalBookTitle" class="text-lg font-bold mt-1 line-clamp-1">Book Title</h3>
-                    <p id="buyModalBookAuthor" class="text-xs text-gray-500 dark:text-gray-400">Author Name</p>
-                    <div class="mt-1 text-emerald-600 dark:text-emerald-400 font-extrabold text-base">
-                        விலை: ₹<span id="buyModalBookPrice">0</span>
-                    </div>
+                    <p class="font-bold">நேரடி பணப் பரிவர்த்தனை உறுதியளிப்பு:</p>
+                    <p class="text-[11px] text-blue-700">இந்த தொகை நேரடியாக எழுத்தாளரின் <span id="modalUpiDisplay" class="font-mono font-bold text-blue-900"></span> என்ற UPI கணக்கிற்குச் செல்லும்.</p>
                 </div>
             </div>
 
-            <!-- Payment Steps / QR Code Section -->
-            <div class="text-center space-y-4">
-                <div class="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-slate-800 dark:to-slate-800/80 p-3 rounded-xl border border-amber-200 dark:border-slate-700">
-                    <p class="text-xs font-bold text-amber-800 dark:text-amber-400 flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-qrcode"></i> FamPay QR ஸ்கேன் செய்து பணம் செலுத்தவும்
-                    </p>
-                </div>
-
-                <!-- FamPay QR Code Container -->
-                <div class="flex flex-col items-center justify-center bg-gray-900 p-4 rounded-2xl shadow-inner text-white">
-                    <div class="bg-white p-3 rounded-xl shadow-md border-4 border-amber-400 mb-2">
-                        <!-- FamPay SVG Simulated QR Code -->
-                        <svg class="w-48 h-48" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Outer Frame & Finder Patterns -->
-                            <rect width="200" height="200" fill="white"/>
-                            <!-- Top Left -->
-                            <rect x="10" y="10" width="50" height="50" fill="#121212"/>
-                            <rect x="20" y="20" width="30" height="30" fill="white"/>
-                            <rect x="27" y="27" width="16" height="16" fill="#FFD700"/>
-                            <!-- Top Right -->
-                            <rect x="140" y="10" width="50" height="50" fill="#121212"/>
-                            <rect x="150" y="20" width="30" height="30" fill="white"/>
-                            <rect x="157" y="27" width="16" height="16" fill="#FFD700"/>
-                            <!-- Bottom Left -->
-                            <rect x="10" y="140" width="50" height="50" fill="#121212"/>
-                            <rect x="20" y="150" width="30" height="30" fill="white"/>
-                            <rect x="27" y="157" width="16" height="16" fill="#FFD700"/>
-                            <!-- QR Data Noise Patterns -->
-                            <rect x="70" y="10" width="15" height="15" fill="#121212"/>
-                            <rect x="95" y="10" width="30" height="10" fill="#121212"/>
-                            <rect x="70" y="35" width="20" height="20" fill="#121212"/>
-                            <rect x="100" y="30" width="25" height="25" fill="#121212"/>
-                            <rect x="10" y="70" width="20" height="30" fill="#121212"/>
-                            <rect x="40" y="70" width="35" height="15" fill="#121212"/>
-                            <rect x="85" y="65" width="40" height="15" fill="#121212"/>
-                            <rect x="135" y="70" width="20" height="20" fill="#121212"/>
-                            <rect x="165" y="65" width="25" height="35" fill="#121212"/>
-                            <rect x="20" y="110" width="40" height="15" fill="#121212"/>
-                            <rect x="70" y="95" width="25" height="25" fill="#121212"/>
-                            <rect x="110" y="90" width="15" height="35" fill="#121212"/>
-                            <rect x="135" y="100" width="30" height="15" fill="#121212"/>
-                            <rect x="175" y="110" width="15" height="25" fill="#121212"/>
-                            <rect x="70" y="130" width="30" height="20" fill="#121212"/>
-                            <rect x="110" y="135" width="40" height="15" fill="#121212"/>
-                            <rect x="160" y="140" width="30" height="30" fill="#121212"/>
-                            <rect x="70" y="160" width="20" height="30" fill="#121212"/>
-                            <rect x="100" y="165" width="30" height="15" fill="#121212"/>
-                            <rect x="140" y="175" width="45" height="15" fill="#121212"/>
-                            <!-- FamPay Center Badge -->
-                            <circle cx="100" cy="100" r="18" fill="#121212"/>
-                            <circle cx="100" cy="100" r="14" fill="#FFD700"/>
-                            <text x="100" y="104" font-size="10" font-weight="bold" text-anchor="middle" fill="#121212">FAM</text>
-                        </svg>
-                    </div>
-
-                    <div class="flex items-center gap-2 text-xs font-mono bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 mt-1">
-                        <span id="upiIdText" class="text-amber-400">7825955024@fam</span>
-                        <button onclick="copyUpi()" class="hover:text-indigo-400 text-gray-400 transition" title="Copy UPI ID">
-                            <i class="fa-regular fa-copy"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Transaction Input Form -->
-                <div class="text-left space-y-3 pt-2">
-                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                        பணம் செலுத்திய பிறகு UTR / Transaction ID உள்ளிடவும்:
-                    </label>
-                    <input type="text" id="utrInput" placeholder="எ.கா: 412356789012 (12 எண்கள்)" class="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                    
-                    <button onclick="verifyPayment()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-circle-check"></i>
-                        பணம் செலுத்தியதை உறுதிசெய் (Unlock PDF)
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: Download / PDF Reader Modal -->
-    <div id="downloadModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 text-center relative border border-gray-200 dark:border-slate-800 shadow-2xl">
-            <button onclick="closeModal('downloadModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-
-            <div class="w-16 h-16 bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl shadow-inner">
-                <i class="fa-solid fa-circle-check"></i>
+            <!-- Dynamic QR Code Container -->
+            <div class="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div id="qrcode" class="p-2 bg-white rounded-lg shadow-sm border border-slate-200"></div>
+                <p class="text-[11px] text-slate-500 mt-2 font-medium">GPay / PhonePe / Paytm / FamPay மூலம் ஸ்கேன் செய்யவும்</p>
+                <div class="mt-2 font-bold text-xl text-slate-900">செலுத்த வேண்டிய தொகை: <span class="text-emerald-600" id="modalPrice">₹0</span></div>
             </div>
 
-            <h3 class="text-xl font-bold mb-2 text-emerald-600 dark:text-emerald-400">கட்டணம் பெறப்பட்டது!</h3>
-            <p class="text-sm text-gray-600 dark:text-gray-300 mb-6">உங்களின் e-Book வெற்றி கரமாக Unlock செய்யப்பட்டது. கீழே உள்ள பொத்தானை அழுத்தி பதிவிறக்கம் செய்யவும்.</p>
-
-            <a id="pdfDownloadLink" href="#" target="_blank" download class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl block transition shadow-lg flex items-center justify-center gap-2 mb-3">
-                <i class="fa-solid fa-file-pdf text-xl"></i>
-                eBook PDF பதிவிறக்கு (Download)
-            </a>
-
-            <button onclick="closeModal('downloadModal')" class="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 underline">
-                முகப்பு பக்கத்திற்கு செல்
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL 3: Admin Add / Upload eBook Modal -->
-    <div id="uploadModal" class="fixed inset-0 z-50 hidden bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-gray-100 dark:border-slate-800 relative my-8">
-            <button onclick="closeModal('uploadModal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-
-            <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
-                <i class="fa-solid fa-cloud-arrow-up"></i> புதிய e-Book பதிவேற்றம்
-            </h3>
-
-            <form id="uploadForm" onsubmit="handleBookUpload(event)" class="space-y-4 text-left">
+            <!-- Buyer Details Entry -->
+            <div class="space-y-3 pt-1">
                 <div>
-                    <label class="block text-xs font-semibold mb-1">புத்தகத்தின் தலைப்பு (Title)</label>
-                    <input type="text" id="newTitle" required placeholder="எ.கா: தெனாலிராமன் கதைகள்" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">உங்கள் பெயர் (Your Name) *</label>
+                    <input type="text" id="buyerName" required placeholder="Ex: Anbu" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-semibold mb-1">ஆசிரியர் பெயர் (Author)</label>
-                    <input type="text" id="newAuthor" required placeholder="எ.கா: தமிழ் அறிஞர்கள்" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">பரிவர்த்தனை குறிப்பு எண்ண / UTR (Payment Ref/Txn ID) *</label>
+                    <input type="text" id="buyerUtr" required placeholder="12 இலக்க UTR எண் (Ex: 312456789012)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none">
                 </div>
+            </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">வகை (Category)</label>
-                        <select id="newCategory" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                            <option value="kids">சிறுவர் கதைகள்</option>
-                            <option value="academic">பாடப்புத்தகங்கள்</option>
-                            <option value="fiction">நாவல்கள்</option>
-                            <option value="selfhelp">சுயமுன்னேற்றம்</option>
-                            <option value="comics">காமிக்ஸ்</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold mb-1">விலை (Price ₹)</label>
-                        <input type="number" id="newPrice" min="0" required placeholder="29" class="w-full px-3.5 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold mb-1">அட்டைப்பட URL (Cover Image Link)</label>
-                    <input type="url" id="newCover" required placeholder="https://images.unsplash.com/..." class="w-full px-3.5 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold mb-1">PDF File Link (Google Drive / Direct URL)</label>
-                    <input type="url" id="newPdfUrl" required placeholder="https://drive.google.com/..." class="w-full px-3.5 py-2 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-                </div>
-
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition flex items-center justify-center gap-2 mt-4">
-                    <i class="fa-solid fa-plus-circle"></i>
-                    புத்தகத்தைச் சேர் (Publish eBook)
+            <div class="space-y-2 pt-2">
+                <button onclick="confirmPaymentAndDownload()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-circle-check"></i>
+                    பணம் செலுத்திவிட்டேன் (Verify & Download PDF)
                 </button>
-            </form>
+                <button onclick="closePaymentModal()" class="w-full py-2 text-slate-500 hover:text-slate-700 font-semibold text-xs">
+                    ரத்து செய் (Cancel)
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Notification Toast -->
-    <div id="toast" class="fixed bottom-6 right-6 z-50 hidden bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl border border-slate-700 text-sm flex items-center space-x-3 transition transform duration-300">
-        <i id="toastIcon" class="fa-solid fa-circle-info text-amber-400"></i>
-        <span id="toastMsg">செய்தி விவரம்</span>
+
+    <!-- ================= NOTIFICATION TOAST ================= -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-800">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toastMessage" class="text-xs font-semibold">நிகழ்வு வெற்றி!</span>
     </div>
 
-    <!-- JavaScript Logic -->
+
+    <!-- ================= APPLICATION LOGIC (JS) ================= -->
     <script>
-        // Sample Pre-populated Ebooks Dataset
-        let defaultBooks = [
+        // Sample Initial Books Data with distinct Authors and UPI IDs
+        const initialBooks = [
             {
-                id: '1',
-                title: 'பஞ்சதந்திரக் கதைகள் (Panchatantra)',
-                author: 'விஷ்ணு சர்மா',
-                category: 'kids',
-                price: 29,
-                cover: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=500&q=80',
-                pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-            },
-            {
-                id: '2',
-                title: '10th & 12th Maths Formula Guide',
-                author: 'கல்வி வாரியம்',
-                category: 'academic',
+                id: 101,
+                title: "சிறுவர் கதைக் களஞ்சியம் (Kids Bedtime Stories)",
+                category: "சிறியவர்கள் (Kids)",
                 price: 49,
-                cover: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=500&q=80',
-                pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                author: "கவிதா ஆர் (Kavitha R)",
+                upiId: "kavitha@okicici",
+                description: "குழந்தைகளுக்கான அழகான நீதிநெறி கதைகள் மற்றும் வண்ணப் படங்கள் நிறைந்த மின்நூல்.",
+                fileName: "Kids_Bedtime_Stories.pdf",
+                salesCount: 12
             },
             {
-                id: '3',
-                title: 'பொன்னியின் செல்வன் (பாகம் 1)',
-                author: 'அமர்நாத் / கல்கி',
-                category: 'fiction',
-                price: 79,
-                cover: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?auto=format&fit=crop&w=500&q=80',
-                pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                id: 102,
+                title: "கணிதம் எளிது (Master Mathematics Guide)",
+                category: "மாணவர்கள் (Students)",
+                price: 99,
+                author: "முரளி தரன் (Muralidharan)",
+                upiId: "murali@ybl",
+                description: "பள்ளி மாணவர்களுக்கான எளிமையான கணித சூத்திரங்கள் மற்றும் தீர்வுகள்.",
+                fileName: "Maths_Master_Guide.pdf",
+                salesCount: 25
             },
             {
-                id: '4',
-                title: 'வெற்றி நிச்சயம் (Motivation Guide)',
-                author: 'முனைவர் ஏ. பி. ஜே',
-                category: 'selfhelp',
-                price: 39,
-                cover: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=500&q=80',
-                pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
-            },
-            {
-                id: '5',
-                title: 'சூப்பர் ஹீரோ சாகசங்கள் (Comic)',
-                author: 'காமிக்ஸ் கிரியேட்டர்ஸ்',
-                category: 'comics',
-                price: 19,
-                cover: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=500&q=80',
-                pdfUrl: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+                id: 103,
+                title: "மன அமைதியும் தியானமும் (Self Wellness)",
+                category: "பெரியவர்கள் (Adults)",
+                price: 149,
+                author: "டாக்டர். சுந்தர் (Dr. Sundar)",
+                upiId: "sundar@paytm",
+                description: "தினசரி மன அழுத்தத்தை குறைத்து மகிழ்ச்சியாக வாழ உதவும் வழிகாட்டி.",
+                fileName: "Mindfulness_Guide.pdf",
+                salesCount: 8
             }
         ];
 
-        // State variables
-        let books = JSON.parse(localStorage.getItem('eb_books')) || defaultBooks;
-        let selectedBook = null;
-        let activeCategory = 'all';
+        // Global State
+        let booksStore = JSON.parse(localStorage.getItem('ebook_marketplace_books')) || initialBooks;
+        let transactionsStore = JSON.parse(localStorage.getItem('ebook_marketplace_txns')) || [
+            { date: '2026-10-28', bookId: 101, bookTitle: 'சிறுவர் கதைக் களஞ்சியம்', author: 'கவிதா ஆர் (Kavitha R)', buyer: 'சுரேஷ்', amount: 49, upiId: 'kavitha@okicici', status: 'Verified' },
+            { date: '2026-10-30', bookId: 102, bookTitle: 'கணிதம் எளிது', author: 'முரளி தரன் (Muralidharan)', buyer: 'அனிதா', amount: 99, upiId: 'murali@ybl', status: 'Verified' }
+        ];
 
-        // Load Books on Window Load
+        let activeCategory = 'All';
+        let currentCheckoutBook = null;
+        let qrCodeObj = null;
+
+        // Initialize App
         window.onload = function() {
+            saveData();
             renderBooks();
+            populateAuthorDropdown();
+            renderDashboard();
         };
 
-        // Dark Mode Toggle
-        function toggleDarkMode() {
-            document.documentElement.classList.toggle('dark');
-            const icon = document.getElementById('themeIcon');
-            if(document.documentElement.classList.contains('dark')) {
-                icon.className = 'fa-solid fa-sun text-lg text-amber-400';
-            } else {
-                icon.className = 'fa-solid fa-moon text-lg';
+        function saveData() {
+            localStorage.setItem('ebook_marketplace_books', JSON.stringify(booksStore));
+            localStorage.setItem('ebook_marketplace_txns', JSON.stringify(transactionsStore));
+        }
+
+        // Tab Navigation
+        function switchTab(tabName) {
+            document.getElementById('section-store').classList.add('hidden');
+            document.getElementById('section-upload').classList.add('hidden');
+            document.getElementById('section-dashboard').classList.add('hidden');
+
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.className = "px-3 py-2 rounded-lg text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center space-x-2";
+            });
+
+            document.getElementById(`section-${tabName}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            activeBtn.className = "px-3 py-2 rounded-lg text-sm font-semibold transition-all flex items-center space-x-2 bg-brand-600 text-white shadow-sm";
+
+            if(tabName === 'dashboard') {
+                populateAuthorDropdown();
+                renderDashboard();
             }
         }
 
-        // Render Books Grid
-        function renderBooks(filteredList = null) {
+        // Render Books Store
+        function renderBooks() {
             const grid = document.getElementById('booksGrid');
-            const emptyState = document.getElementById('emptyState');
-            const countText = document.getElementById('bookCount');
-            
-            let displayList = filteredList || books;
+            const emptyState = document.getElementById('emptyStore');
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
 
-            if(activeCategory !== 'all' && !filteredList) {
-                displayList = books.filter(b => b.category === activeCategory);
-            }
+            const filtered = booksStore.filter(b => {
+                const matchesCat = (activeCategory === 'All' || b.category === activeCategory);
+                const matchesSearch = b.title.toLowerCase().includes(searchVal) || b.author.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
 
-            countText.innerText = `${displayList.length} புத்தகங்கள்`;
+            grid.innerHTML = '';
 
-            if(displayList.length === 0) {
-                grid.innerHTML = '';
+            if(filtered.length === 0) {
                 emptyState.classList.remove('hidden');
                 return;
             }
-
             emptyState.classList.add('hidden');
-            grid.innerHTML = displayList.map(book => `
-                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/60 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group">
-                    <div class="relative overflow-hidden h-56 bg-gray-100 dark:bg-slate-900">
-                        <img src="${book.cover}" alt="${book.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" onerror="this.src='https://placehold.co/400x500/1e293b/ffffff?text=eBook'">
-                        <span class="absolute top-3 right-3 bg-slate-900/80 text-white text-xs px-2.5 py-1 rounded-full font-semibold backdrop-blur-sm">
-                            ₹${book.price}
-                        </span>
-                    </div>
-                    <div class="p-4 flex-1 flex flex-col justify-between">
-                        <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400">
-                                ${getCategoryLabel(book.category)}
+
+            filtered.forEach(book => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between";
+                
+                card.innerHTML = `
+                    <div class="p-5 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold px-2.5 py-1 rounded-full bg-brand-50 text-brand-600 border border-brand-100">
+                                ${book.category}
                             </span>
-                            <h3 class="font-bold text-base mt-1 line-clamp-1 group-hover:text-indigo-600 transition">${book.title}</h3>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">ஆசிரியர்: ${book.author}</p>
+                            <span class="text-xs font-mono font-medium text-slate-400">
+                                <i class="fa-solid fa-download text-[10px] mr-1"></i>${book.salesCount || 0} விற்றது
+                            </span>
                         </div>
-                        <button onclick="openBuyModal('${book.id}')" class="mt-4 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium py-2.5 rounded-xl text-sm transition flex items-center justify-center gap-2 shadow-sm">
-                            <i class="fa-solid fa-cart-shopping text-xs"></i>
-                            இப்போதே வாங்கு (Buy Now)
+
+                        <div>
+                            <h3 class="font-bold text-slate-900 text-base leading-snug line-clamp-2">${book.title}</h3>
+                            <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-user-pen text-slate-400"></i> ${book.author}
+                            </p>
+                        </div>
+
+                        <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed">${book.description || 'பாடப்புத்தகம் மற்றும் வாசிப்பு பிரதிகளுக்கான மின்நூல்.'}</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase text-slate-400 font-bold block">விலை (Price)</span>
+                            <span class="text-lg font-extrabold text-slate-900">₹${book.price}</span>
+                        </div>
+                        <button onclick="openPaymentModal(${book.id})" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-bag-shopping"></i> வாங்கு (Buy Now)
                         </button>
                     </div>
-                </div>
-            `).join('');
+                `;
+                grid.appendChild(card);
+            });
         }
 
-        // Category Tag Names
-        function getCategoryLabel(cat) {
-            const labels = {
-                kids: 'சிறுவர் கதைகள்',
-                academic: 'பாடப்புத்தகம்',
-                fiction: 'நாவல்',
-                selfhelp: 'சுயமுன்னேற்றம்',
-                comics: 'காமிக்ஸ்'
-            };
-            return labels[cat] || cat;
-        }
-
-        // Filter Category Handler
+        // Search & Category Filters
+        function filterBooks() { renderBooks(); }
         function filterCategory(cat) {
             activeCategory = cat;
-            
-            // Update Active Tab Styles
             document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.className = 'cat-btn flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-indigo-500 transition text-gray-700 dark:text-gray-200';
+                btn.className = "cat-btn px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-slate-100 text-slate-600 hover:bg-slate-200";
             });
-            event.currentTarget.className = 'cat-btn active flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap border bg-indigo-600 text-white border-indigo-600';
-
+            event.target.className = "cat-btn active px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-brand-600 text-white";
             renderBooks();
         }
 
-        // Search Handlers
-        function handleSearch() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            filterSearch(query);
-        }
-        function handleSearchMobile() {
-            const query = document.getElementById('searchInputMobile').value.toLowerCase();
-            filterSearch(query);
-        }
-        function filterSearch(query) {
-            const filtered = books.filter(b => 
-                b.title.toLowerCase().includes(query) || 
-                b.author.toLowerCase().includes(query)
-            );
-            renderBooks(filtered);
-        }
+        // Upload Form Handler
+        function handleUpload(e) {
+            e.preventDefault();
 
-        // Buy Modal Controls
-        function openBuyModal(bookId) {
-            selectedBook = books.find(b => b.id === bookId);
-            if(!selectedBook) return;
+            const title = document.getElementById('bookTitle').value;
+            const category = document.getElementById('bookCategory').value;
+            const price = parseFloat(document.getElementById('bookPrice').value);
+            const author = document.getElementById('authorName').value;
+            const upiId = document.getElementById('authorUpi').value.trim();
+            const desc = document.getElementById('bookDesc').value;
+            const fileInput = document.getElementById('pdfFile');
 
-            document.getElementById('buyModalBookCover').src = selectedBook.cover;
-            document.getElementById('buyModalBookTitle').innerText = selectedBook.title;
-            document.getElementById('buyModalBookAuthor').innerText = `ஆசிரியர்: ${selectedBook.author}`;
-            document.getElementById('buyModalBookPrice').innerText = selectedBook.price;
-            document.getElementById('buyModalCategory').innerText = getCategoryLabel(selectedBook.category);
-            document.getElementById('utrInput').value = '';
-
-            openModal('buyModal');
-        }
-
-        // Copy FamPay UPI ID
-        function copyUpi() {
-            const upi = "7825955024@fam";
-            const input = document.createElement('input');
-            input.value = upi;
-            document.body.appendChild(input);
-            input.select();
-            document.execCommand('copy');
-            document.body.removeChild(input);
-            showToast('UPI ID நகலெடுக்கப்பட்டது!');
-        }
-
-        // Payment Verification Logic
-        function verifyPayment() {
-            const utr = document.getElementById('utrInput').value.trim();
-            if(!utr || utr.length < 4) {
-                showToast('சரியான Transaction UTR எண்ணை உள்ளிடவும்!', true);
+            if(!fileInput.files[0]) {
+                showToast("தயவுசெய்து PDF கோப்பைத் தேர்ந்தெடுக்கவும்!", "error");
                 return;
             }
 
-            closeModal('buyModal');
-            
-            // Set download link in second modal
-            const downloadBtn = document.getElementById('pdfDownloadLink');
-            downloadBtn.href = selectedBook.pdfUrl;
-
-            openModal('downloadModal');
-            showToast('கட்டணம் சரிபார்க்கப்பட்டது!');
-        }
-
-        // Handle Admin Upload Form Submit
-        function handleBookUpload(e) {
-            e.preventDefault();
-
             const newBook = {
-                id: Date.now().toString(),
-                title: document.getElementById('newTitle').value,
-                author: document.getElementById('newAuthor').value,
-                category: document.getElementById('newCategory').value,
-                price: parseFloat(document.getElementById('newPrice').value),
-                cover: document.getElementById('newCover').value,
-                pdfUrl: document.getElementById('newPdfUrl').value
+                id: Date.now(),
+                title: title,
+                category: category,
+                price: price,
+                author: author,
+                upiId: upiId,
+                description: desc,
+                fileName: fileInput.files[0].name,
+                salesCount: 0
             };
 
-            books.unshift(newBook);
-            localStorage.setItem('eb_books', JSON.stringify(books));
-            renderBooks();
-            closeModal('uploadModal');
+            booksStore.unshift(newBook);
+            saveData();
+            
             document.getElementById('uploadForm').reset();
-            showToast('புதிய புத்தகம் வெற்றி கரமாக பதிவேற்றப்பட்டது!');
+            document.getElementById('fileLabelText').innerText = "PDF கோப்பை தேர்வு செய்ய இங்கே கிளிக் செய்யவும்";
+            
+            showToast("புத்தகம் வெற்றிகரமாக பதிவேற்றப்பட்டது!", "success");
+            switchTab('store');
         }
 
-        // Modal Utils
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
+        function updateFileLabel(input) {
+            if(input.files[0]) {
+                document.getElementById('fileLabelText').innerText = `தேர்வு செய்யப்பட்டது: ${input.files[0].name}`;
+            }
         }
 
-        // Toast Notification System
-        function showToast(msg, isError = false) {
+        // Payment Modal & Dynamic QR Logic
+        function openPaymentModal(bookId) {
+            currentCheckoutBook = booksStore.find(b => b.id === bookId);
+            if(!currentCheckoutBook) return;
+
+            document.getElementById('modalBookTitle').innerText = currentCheckoutBook.title;
+            document.getElementById('modalAuthorInfo').innerText = `எழுத்தாளர்: ${currentCheckoutBook.author}`;
+            document.getElementById('modalUpiDisplay').innerText = currentCheckoutBook.upiId;
+            document.getElementById('modalPrice').innerText = `₹${currentCheckoutBook.price}`;
+
+            // Clean previous QR
+            document.getElementById('qrcode').innerHTML = "";
+
+            // Standardized UPI Intent URI directly to specific author
+            // upi://pay?pa=ADDRESS&pn=NAME&am=AMOUNT&cu=INR
+            const upiString = `upi://pay?pa=${encodeURIComponent(currentCheckoutBook.upiId)}&pn=${encodeURIComponent(currentCheckoutBook.author)}&am=${currentCheckoutBook.price}&cu=INR`;
+
+            // Generate QR Code
+            qrCodeObj = new QRCode(document.getElementById("qrcode"), {
+                text: upiString,
+                width: 150,
+                height: 150,
+                colorDark : "#0f172a",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('paymentModal').classList.remove('hidden');
+            document.getElementById('paymentModal').classList.add('flex');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            document.getElementById('paymentModal').classList.remove('flex');
+            currentCheckoutBook = null;
+        }
+
+        function confirmPaymentAndDownload() {
+            const buyerName = document.getElementById('buyerName').value.trim();
+            const buyerUtr = document.getElementById('buyerUtr').value.trim();
+
+            if(!buyerName || !buyerUtr) {
+                showToast("தயவுசெய்து உங்கள் பெயர் மற்றும் UTR எண்ணை உள்ளிடவும்!", "error");
+                return;
+            }
+
+            // Create Transaction Entry
+            const newTxn = {
+                date: new Date().toISOString().split('T')[0],
+                bookId: currentCheckoutBook.id,
+                bookTitle: currentCheckoutBook.title,
+                author: currentCheckoutBook.author,
+                buyer: buyerName,
+                amount: currentCheckoutBook.price,
+                upiId: currentCheckoutBook.upiId,
+                status: 'Verified'
+            };
+
+            transactionsStore.unshift(newTxn);
+            
+            // Increment sales count
+            currentCheckoutBook.salesCount = (currentCheckoutBook.salesCount || 0) + 1;
+            saveData();
+
+            // Simulate PDF Download
+            const dummyPdfContent = `%PDF-1.4 %-Sample PDF eBook: ${currentCheckoutBook.title} by ${currentCheckoutBook.author}`;
+            const blob = new Blob([dummyPdfContent], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = currentCheckoutBook.fileName || `${currentCheckoutBook.title}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            closePaymentModal();
+            showToast("பரிவர்த்தனை சரிபார்க்கப்பட்டது! PDF பதிவிறக்கம் தொடங்குகிறது.", "success");
+            
+            document.getElementById('buyerName').value = "";
+            document.getElementById('buyerUtr').value = "";
+            renderBooks();
+        }
+
+        // Author Wallet Dashboard Logic
+        function populateAuthorDropdown() {
+            const select = document.getElementById('authorSelect');
+            const authors = [...new Set(booksStore.map(b => b.author))];
+
+            select.innerHTML = '';
+            if(authors.length === 0) {
+                select.innerHTML = '<option value="">எழுத்தாளர்கள் இல்லை</option>';
+                return;
+            }
+
+            authors.forEach(auth => {
+                const opt = document.createElement('option');
+                opt.value = auth;
+                opt.innerText = auth;
+                select.appendChild(opt);
+            });
+        }
+
+        function renderDashboard() {
+            const selectedAuthor = document.getElementById('authorSelect').value;
+            const tableBody = document.getElementById('transactionsTableBody');
+            
+            if(!selectedAuthor) {
+                document.getElementById('statTotalSales').innerText = '0';
+                document.getElementById('statTotalEarnings').innerText = '₹0';
+                document.getElementById('statActiveBooks').innerText = '0';
+                tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">தரவுகள் எதுவும் இல்லை</td></tr>';
+                return;
+            }
+
+            // Filter Author Specific Transactions & Books
+            const authorTxns = transactionsStore.filter(t => t.author === selectedAuthor);
+            const authorBooks = booksStore.filter(b => b.author === selectedAuthor);
+
+            const totalEarnings = authorTxns.reduce((sum, t) => sum + Number(t.amount), 0);
+            const totalSales = authorTxns.length;
+
+            document.getElementById('statTotalSales').innerText = totalSales;
+            document.getElementById('statTotalEarnings').innerText = `₹${totalEarnings}`;
+            document.getElementById('statActiveBooks').innerText = authorBooks.length;
+
+            tableBody.innerHTML = '';
+            if(authorTxns.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="6" class="p-4 text-center text-slate-400">பரிவர்த்தனைகள் எதுவும் இல்லை</td></tr>';
+                return;
+            }
+
+            authorTxns.forEach(t => {
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-50 transition-colors";
+                row.innerHTML = `
+                    <td class="p-3 font-mono text-slate-600">${t.date}</td>
+                    <td class="p-3 font-semibold text-slate-800">${t.bookTitle}</td>
+                    <td class="p-3 text-slate-600">${t.buyer}</td>
+                    <td class="p-3 font-bold text-emerald-600">₹${t.amount}</td>
+                    <td class="p-3 font-mono text-slate-500 text-[11px]">${t.upiId}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">Direct UPI Verified</span></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Toast Helper
+        function showToast(msg, type = "success") {
             const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
+            const toastMsg = document.getElementById('toastMessage');
             const toastIcon = document.getElementById('toastIcon');
 
             toastMsg.innerText = msg;
-            toastIcon.className = isError ? "fa-solid fa-circle-exclamation text-rose-500" : "fa-solid fa-circle-check text-emerald-400";
-            
-            toast.classList.remove('hidden');
+            if(type === 'error') {
+                toastIcon.className = "fa-solid fa-circle-exclamation text-red-400 text-lg";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
             setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 3000);
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
         }
     </script>
 </body>
